@@ -10,13 +10,14 @@ type HucResponse = {
   source: { provider: string; layer: string };
 };
 
-const DEFAULT_CENTER = { lat: 43.7, lng: -85.0 };
-const DEFAULT_ZOOM = 6;
+const DEFAULT_CENTER = { lat: 44.5, lng: -84.8 };
+const DEFAULT_ZOOM = 6.5;
 
 export default function Home() {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
   const mapRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const sidebarRef = useRef<HTMLElement | null>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
   const markerInstance = useRef<google.maps.Marker | null>(null);
   const dataLayerInstance = useRef<google.maps.Data | null>(null);
@@ -30,13 +31,12 @@ export default function Home() {
   const [lastQuery, setLastQuery] = useState<{ lat: number; lng: number } | null>(null);
   const lastLookupLevel = useRef<string | null>(null);
 
-  const statusText = useMemo(() => {
+  const noticeText = useMemo(() => {
     if (!googleMapsKey) return "Missing Google Maps API key.";
     if (loading) return "Looking up HUC boundary...";
     if (error) return error;
-    if (result) return "HUC boundary loaded.";
-    return "Search for a place to fetch its watershed boundary.";
-  }, [error, loading, result, googleMapsKey]);
+    return "";
+  }, [error, loading, googleMapsKey]);
 
   const clearSelection = useCallback(() => {
     setError(null);
@@ -66,7 +66,19 @@ export default function Home() {
       });
     });
     if (hasPoints) {
-      mapInstance.current.fitBounds(bounds);
+      const basePadding = 40;
+      const padding = { top: basePadding, right: basePadding, bottom: basePadding, left: basePadding };
+      const sidebarEl = sidebarRef.current;
+      if (sidebarEl) {
+        const rect = sidebarEl.getBoundingClientRect();
+        const isMobile = window.innerWidth <= 960;
+        if (isMobile) {
+          padding.top = Math.round(rect.height + 24);
+        } else {
+          padding.left = Math.round(rect.width + 24);
+        }
+      }
+      mapInstance.current.fitBounds(bounds, padding);
     }
   }, []);
 
@@ -190,12 +202,15 @@ export default function Home() {
       />
       <main>
         <div className="map-shell">
-          <header>
-            <h1 className="hero-title">HUC Finder</h1>
+          <div id="map" ref={mapRef} />
+        </div>
+        <aside className="sidebar" ref={sidebarRef}>
+          <header className="hero-card">
+            <h1 className="hero-title">HUC Finder by Kelvin Chang</h1>
             <p className="tagline">Locate the watershed boundary for any place.</p>
           </header>
           <div className="search-card">
-            <div className="search-row">
+            <div className="search-stack">
               <input
                 ref={inputRef}
                 type="text"
@@ -215,46 +230,41 @@ export default function Home() {
               <span className="badge">Powered by ArcGIS</span>
             </div>
           </div>
-          <div id="map" ref={mapRef} />
-        </div>
-        <aside className="panel">
-          <h2>Watershed Result</h2>
-          <div className="status">{statusText}</div>
-          {result ? (
-            <>
-              <div className="meta">
-                <div>
-                  <strong>HUC code:</strong> {result.huc.code}
-                </div>
-                <div>
-                  <strong>Level:</strong> {result.level}
-                </div>
-                {result.huc.name ? (
+          <section className="panel">
+            <h2>Watershed Result</h2>
+            {noticeText ? <div className="status-text">{noticeText}</div> : null}
+            {result ? (
+              <>
+                <div className="meta">
                   <div>
-                    <strong>Name:</strong> {result.huc.name}
+                    <strong>HUC code:</strong> {result.huc.code}
                   </div>
-                ) : null}
-              </div>
-              <div className="search-row">
-                <button
-                  type="button"
-                  onClick={() => navigator.clipboard.writeText(result.huc.code)}
-                >
-                  Copy code
-                </button>
-                <button className="secondary" type="button" onClick={clearSelection}>
-                  Reset
-                </button>
-              </div>
-              <div className="footer-note">
-                Source: {result.source.provider} • Layer {result.source.layer}
-              </div>
-            </>
-          ) : (
-            <div className="footer-note">
-              Use the search box to locate a place and fetch its HUC boundary.
-            </div>
-          )}
+                  <div>
+                    <strong>Level:</strong> {result.level}
+                  </div>
+                  {result.huc.name ? (
+                    <div>
+                      <strong>Name:</strong> {result.huc.name}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="search-row">
+                  <button
+                    type="button"
+                    onClick={() => navigator.clipboard.writeText(result.huc.code)}
+                  >
+                    Copy code
+                  </button>
+                  <button className="secondary" type="button" onClick={clearSelection}>
+                    Reset
+                  </button>
+                </div>
+                <div className="footer-note">
+                  Source: {result.source.provider} • Layer {result.source.layer}
+                </div>
+              </>
+            ) : null}
+          </section>
         </aside>
       </main>
     </>

@@ -1,15 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=DM+Serif+Display&display=swap');
 
 :root {
   color-scheme: light;
-  --ink: #1f2228;
-  --muted: #6b6f76;
-  --panel: #ffffff;
-  --accent: #0d7c66;
-  --accent-strong: #0b5c4c;
-  --accent-soft: #cbe9e2;
-  --border: rgba(31, 34, 40, 0.12);
-  --shadow: 0 24px 48px rgba(18, 24, 38, 0.16);
+  --ink: #f1f4f9;
+  --muted: #a7b0bf;
+  --panel: #11131a;
+  --accent: #4ed6b0;
+  --accent-strong: #1fa983;
+  --accent-soft: rgba(78, 214, 176, 0.16);
+  --border: rgba(241, 244, 249, 0.12);
+  --shadow: 0 24px 48px rgba(4, 8, 16, 0.55);
   --radius: 18px;
 }
 
@@ -27,44 +27,54 @@ body {
   margin: 0;
   font-family: "Space Grotesk", system-ui, sans-serif;
   color: var(--ink);
-  background: radial-gradient(circle at 20% 20%, #e7f2ef 0%, #f6efe7 45%, #f4f5fb 100%);
+  background: #000000;
 }
 
 main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 20px;
+  position: relative;
   height: 100%;
-  padding: 24px;
+  padding: 0;
 }
 
-header {
-  position: absolute;
-  inset: 24px auto auto 24px;
-  z-index: 10;
+.sidebar {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  z-index: 10;
+  max-width: 380px;
+}
+
+.hero-card {
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(17, 19, 26, 0.9);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 .hero-title {
-  font-family: "Fraunces", serif;
-  font-size: 28px;
+  font-family: "DM Serif Display", serif;
+  font-size: 30px;
   margin: 0;
 }
 
 .tagline {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--muted);
 }
 
 .map-shell {
   position: relative;
-  border-radius: var(--radius);
+  border-radius: 0;
   overflow: hidden;
   box-shadow: var(--shadow);
-  background: #e8e8ee;
+  background: #000000;
+  border: none;
+  height: 100%;
 }
 
 #map {
@@ -73,17 +83,18 @@ header {
 }
 
 .search-card {
-  position: absolute;
-  top: 24px;
-  left: 24px;
-  z-index: 20;
   display: grid;
   gap: 10px;
   padding: 16px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(17, 19, 26, 0.92);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border);
+}
+
+.search-stack {
+  display: grid;
+  gap: 10px;
 }
 
 .search-row {
@@ -100,13 +111,27 @@ select {
   font-size: 14px;
   outline: none;
   min-width: 260px;
-  background: #fff;
+  background: #0b0f18;
+  color: var(--ink);
+}
+
+input[type="text"] {
+  background-image: none;
+}
+
+select {
+  padding-right: 44px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10' viewBox='0 0 14 10'%3E%3Cpath d='M1 2l6 6 6-6' fill='none' stroke='%23a7b0bf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px;
 }
 
 input[type="text"]:focus,
 select:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(13, 124, 102, 0.16);
+  box-shadow: 0 0 0 3px rgba(78, 214, 176, 0.18);
 }
 
 button {
@@ -117,7 +142,7 @@ button {
   font-weight: 600;
   cursor: pointer;
   background: var(--accent);
-  color: #fff;
+  color: #0b0f18;
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
@@ -127,8 +152,8 @@ button:hover {
 }
 
 button.secondary {
-  background: #fff;
-  color: var(--accent-strong);
+  background: #0b0f18;
+  color: var(--ink);
   border: 1px solid var(--border);
 }
 
@@ -165,8 +190,8 @@ button.secondary:hover {
   gap: 6px;
   padding: 6px 10px;
   border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent-strong);
+  background: rgba(78, 214, 176, 0.2);
+  color: #9cf3d9;
   font-weight: 600;
   font-size: 12px;
 }
@@ -174,7 +199,12 @@ button.secondary:hover {
 .status {
   padding: 10px 12px;
   border-radius: 12px;
-  background: #f3f3f7;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.status-text {
   font-size: 13px;
   color: var(--muted);
 }
@@ -186,18 +216,20 @@ button.secondary:hover {
 
 @media (max-width: 960px) {
   main {
-    grid-template-columns: 1fr;
+    display: block;
+    min-height: 100vh;
   }
 
-  .panel {
-    order: -1;
+  .map-shell {
+    min-height: 100vh;
+    height: 100vh;
   }
 
-  .search-card {
-    position: static;
-  }
-
-  header {
-    position: static;
+  .sidebar {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    top: 16px;
+    max-width: none;
   }
 }
